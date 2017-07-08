@@ -3,6 +3,9 @@ mangaapi
 
 API for manga reader
 
+All Manga list: response.json
+source: https://market.mashape.com/doodle/manga-scraper
+
 ## Routes
 
 ### Search
