@@ -1,6 +1,7 @@
 var express = require('express');
 var cheerio = require('cheerio');
 var request = require('request');
+var requestretry = require('requestretry');
 var router = express.Router();
 
 /* GET search results listing. */
@@ -11,12 +12,16 @@ router.get('/', function(req, res) {
 
 	if (searchTerm) {
 		var url = rootUrl + '/search/?w=' + searchTerm;
+		var searchUrl = url;
 
         var results = [];
 
-	    request(url, function(err, resp, body) {
-	        if (err)
-	            throw err;
+	    //request(url, function(err, resp, body) {
+	    requestretry({url: searchUrl, maxAttempts: 10, retryDelay: 5000}, function(err, resp, body) {
+	        if (err) {
+	            //throw err;
+	            console.log(err);
+	        }
 
 	        $ = cheerio.load(body);
 
