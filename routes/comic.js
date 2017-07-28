@@ -2,7 +2,15 @@ var express = require('express');
 var cheerio = require('cheerio');
 var request = require('request');
 var requestretry = require('requestretry');
+var httpstatus = require('http-status-codes');
 var router = express.Router();
+
+var maxattempts = 30;
+
+function myDelayStrategy(err, response, body) {
+	// set delay of retry to a random number between 500 and 3500 ms
+	return Math.floor(Math.random() * (3500-500+1) + 500);
+}
 
 /* GET comic listing. */
 router.get('/', function(req, res) {
@@ -13,10 +21,15 @@ router.get('/', function(req, res) {
         var chapters = [];
 
 	    //request(comicUrl, function(err, resp, body) {
-	    requestretry({url: comicUrl, maxAttempts: 10, retryDelay: 5000}, function(err, resp, body) {
+	    requestretry({url: comicUrl, maxAttempts: maxattempts, delayStrategy: myDelayStrategy}, function(err, resp, body) {
 	        if (err) {
 	            //throw err;
 	            console.log(err);
+	            if ( resp ) {
+	            	if ( resp.attempts >= (maxattempts-1)) ) {
+	            		res.status(httpstatus.GATEWAY_TIMEOUT).send("please retry");
+	            	}
+	            }
 	        }
 
 	        $ = cheerio.load(body);
