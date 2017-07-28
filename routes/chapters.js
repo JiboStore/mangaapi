@@ -26,7 +26,7 @@ router.get('/', function(req, res) {
 	            //throw err;
 	            console.log(err);
 	            if ( resp ) {
-	            	if ( resp.attempts >= (maxattempts-1)) ) {
+	            	if ( resp.attempts >= (maxattempts-1) ) {
 	            		res.status(httpstatus.GATEWAY_TIMEOUT).send("please retry");
 	            	}
 	            }
